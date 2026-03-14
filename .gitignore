@@ -1,0 +1,56 @@
+# --- Laravel Core ---
+/backend//vendor
+/backend/.env
+/backend/.env.backup
+/backend/.env.production
+/backend/composer.lock (※チーム開発でバージョン固定しない場合のみ。基本は管理対象)
+/backend//public/storage
+/backend//storage/*.key
+/backend//storage/framework/cache/data/*
+/backend//storage/framework/sessions/*
+/backend//storage/framework/views/*
+/backend//storage/logs/*
+
+# --- Docker / OS ---
+/backend/.phpunit.result.cache
+/backend/docker-compose.override.yml (ローカル専用設定を入れる場合)
+/backend/.DS_Store
+/backend/Thumbs.db
+
+# --- IDE (VSCode / PhpStorm) ---
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# --- Next.js Core ---
+/frontend/node_modules/
+/frontend//.next/
+/frontend//out/
+/frontend/build/
+
+# --- Environment Variables ---
+/frontend/.env
+/frontend/.env.local
+/frontend/.env.development.local
+/frontend/.env.test.local
+/frontend/.env.production.local
+
+# --- Debug / Logs ---
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+/frontend/.pnpm-debug.log*
+/frontend/logs/
+/frontend/*.log
+
+# --- Testing ---
+/frontend/coverage/
+/frontend/.cypress/
+
+# --- Tooling ---
+/frontend/.turbo/
+/frontend/.eslintcache
