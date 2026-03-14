@@ -100,6 +100,14 @@ RUN git config --global --add safe.directory /var/www/html
 
 # ENTRYPOINT ["start-container"]
 
+# 作業ディレクトリの設定
 WORKDIR /var/www/html
+
+# 1. 【重要】手元の Laravel プロジェクトの全ファイルを Docker 内にコピー
+COPY . .
+
+# 2. ファイルが入った状態で権限を変更（これでエラーが消えます）
 RUN chmod -R 777 storage bootstrap/cache
+
+# 3. ポート 80 (または Render が指定するポート) で起動
 CMD php artisan serve --host=0.0.0.0 --port=$PORT
