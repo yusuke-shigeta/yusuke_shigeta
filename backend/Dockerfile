@@ -1,115 +1,29 @@
-FROM ubuntu:24.04
+# 1. 軽量で安定している公式のPHPイメージを使う
+FROM php:8.3-fpm-alpine
 
-LABEL maintainer="Taylor Otwell"
+# 2. 必要なライブラリだけ入れる（PostgreSQL用など）
+RUN apk add --no-cache \
+    postgresql-dev \
+    libpng-dev \
+    zip \
+    libzip-dev \
+    unzip
 
-# 初期設定
-# ARG WWWGROUP
+# 3. PHPの拡張機能をインストール
+RUN docker-php-ext-install pdo_pgsql gd zip
 
-# デプロイ用
-ARG WWWGROUP=1000
-ARG NODE_VERSION=24
-ARG MYSQL_CLIENT="mysql-client"
-ARG POSTGRES_VERSION=18
-
+# 4. 作業ディレクトリの設定
 WORKDIR /var/www/html
 
-ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=UTC
-ENV SUPERVISOR_PHP_COMMAND="/usr/bin/php -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=80"
-ENV SUPERVISOR_PHP_USER="sail"
-ENV PLAYWRIGHT_BROWSERS_PATH=0
-
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
-RUN echo "Acquire::http::Pipeline-Depth 0;" > /etc/apt/apt.conf.d/99custom && \
-    echo "Acquire::http::No-Cache true;" >> /etc/apt/apt.conf.d/99custom && \
-    echo "Acquire::BrokenProxy    true;" >> /etc/apt/apt.conf.d/99custom
-
-RUN apt-get update && apt-get upgrade -y \
-    && mkdir -p /etc/apt/keyrings \
-    && apt-get install -y gnupg gosu curl ca-certificates zip unzip git supervisor sqlite3 libcap2-bin libpng-dev python3 dnsutils librsvg2-bin fswatch ffmpeg nano  \
-    && curl -sS 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xb8dc7e53946656efbce4c1dd71daeaab4ad4cab6' | gpg --dearmor | tee /etc/apt/keyrings/ppa_ondrej_php.gpg > /dev/null \
-    && echo "deb [signed-by=/etc/apt/keyrings/ppa_ondrej_php.gpg] https://ppa.launchpadcontent.net/ondrej/php/ubuntu noble main" > /etc/apt/sources.list.d/ppa_ondrej_php.list \
-    && apt-get update \
-    && apt-get install -y \
-        libgd3 \
-        php8.5-cli \
-        php8.5-dev \
-        php8.5-pgsql \
-        php8.5-sqlite3 \
-        php8.5-gd \
-        php8.5-curl \
-        php8.5-mongodb \
-        php8.5-imap \
-        php8.5-mysql \
-        php8.5-mbstring \
-        php8.5-xml \
-        php8.5-zip \
-        php8.5-bcmath \
-        php8.5-soap \
-        php8.5-intl \
-        php8.5-readline \
-        php8.5-ldap \
-        php8.5-msgpack \
-        php8.5-igbinary \
-        php8.5-redis \
-        #php8.5-swoole \
-        php8.5-memcached \
-        php8.5-pcov \
-        php8.5-imagick \
-        php8.5-xdebug \
-    && curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer \
-    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_VERSION.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
-    && apt-get update \
-    && apt-get install -y nodejs \
-    && npm install -g npm \
-    && npm install -g pnpm \
-    && npm install -g bun \
-    && npx playwright install-deps \
-    && corepack enable \
-    && corepack prepare yarn@stable --activate \
-    && curl -sS https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/keyrings/pgdg.gpg >/dev/null \
-    && echo "deb [signed-by=/etc/apt/keyrings/pgdg.gpg] http://apt.postgresql.org/pub/repos/apt noble-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
-    && apt-get update \
-    && apt-get install -y $MYSQL_CLIENT \
-    && apt-get install -y postgresql-client-$POSTGRES_VERSION \
-    && apt-get -y autoremove \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.5
-
-RUN userdel -r ubuntu
-# 初期設定
-# RUN groupadd --force -g $WWWGROUP sail
-# RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
-
-# デプロイ用
-RUN groupadd --force -g 1000 sail
-RUN useradd -ms /bin/bash --no-user-group -g 1000 -u 1337 sail
-
-RUN git config --global --add safe.directory /var/www/html
-
-# COPY start-container /usr/local/bin/start-container
-# COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-# COPY php.ini /etc/php/8.5/cli/conf.d/99-sail.ini
-# RUN chmod +x /usr/local/bin/start-container
-
-# EXPOSE 80/tcp
-
-# ENTRYPOINT ["start-container"]
-
-# 1. 作業ディレクトリ
-WORKDIR /var/www/html
-
-# 2. 全ファイルをコピー
+# 5. ファイルをコピー
 COPY . .
 
-# 3. 権限を最強にする（所有者を sail に変更し、書き込み許可を出す）
-RUN chown -R sail:sail /var/www/html \
-    && chmod -R 775 storage bootstrap/cache
+# 6. Composerのインストール（マルチステージビルドから拝借）
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN composer install --no-dev --optimize-autoloader
 
-# 4. 【重要】php をフルパス (/usr/bin/php8.5) で指定し、
-# 直接実行ではなく、シェル経由で起動するようにします
-CMD ["/usr/bin/php8.5", "artisan", "serve", "--host=0.0.0.0", "--port=80"]
+# 7. 権限設定
+RUN chmod -R 777 storage bootstrap/cache
+
+# 8. 起動（開発サーバーモード）
+CMD php artisan serve --host=0.0.0.0 --port=$PORT
