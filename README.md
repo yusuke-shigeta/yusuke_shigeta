@@ -226,7 +226,46 @@
 
    これでSupabaseの管理画面（Table Editor）の users テーブルを見てください。あなたの名前が刻まれていれば完璧です！
 
-4. Next.jsをVercelにデプロイする
+4. Laravelを Render.com にデプロイする
+
+   Renderは、GitHubのリポジトリを指定するだけで、自動的にDockerコンテナをビルドして公開してくれる非常に便利なサービスです。
+
+   ①Renderにログインして新規作成
+   [Render.com](https://render.com/)にアクセスし、GitHubでログイン。
+
+   「+ New」 ボタン ＞ 「Web Service」 をクリック。
+
+   今回の GitHub リポジトリ（yusuke_shigeta）を選択して 「Connect」。
+
+   ②インポート設定（ここが重要！）
+   設定画面が開いたら、以下のように入力してください。
+
+   ※以下をbackend直下にコピーする
+   backend/vendor/laravel/sail/runtimes/8.5/Dockerfile
+   backend/vendor/laravel/sail/runtimes/8.5/start-container
+   backend/vendor/laravel/sail/runtimes/8.5/php.ini
+
+   Name: yusuke_shigeta (何でもOK)
+
+   Region: Singapore (日本に一番近いです)
+
+   Branch: main
+
+   Root Directory: backend (ここを間違えないように！)
+
+   Runtime: Docker
+
+   Root Directory: backend
+
+   Dockerfile Path: Dockerfile （backend/ は含めない）
+
+   ※Renderが自動的に backend/Dockerfile を見つけてくれます。
+
+   ③環境変数（Environment Variables）の設定
+   画面の下の方にある 「Environment Variables」 に、先ほど Supabase に繋いだ時の設定を全て入力します。これがないと、本番のLaravelがDBを見つけられません。
+   .envファイルを参照。する
+
+5. Next.jsをVercelにデプロイする
 
    いよいよ「表側」を公開します。ここからはブラウザ操作がメインです。
 
