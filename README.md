@@ -244,6 +244,9 @@
    backend/vendor/laravel/sail/runtimes/8.5/Dockerfile
    backend/vendor/laravel/sail/runtimes/8.5/start-container
    backend/vendor/laravel/sail/runtimes/8.5/php.ini
+   backend/vendor/laravel/sail/runtimes/8.5/supervisord.conf
+
+   git pushしておく
 
    Name: yusuke_shigeta (何でもOK)
 
