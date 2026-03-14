@@ -246,7 +246,16 @@
    backend/vendor/laravel/sail/runtimes/8.5/php.ini
    backend/vendor/laravel/sail/runtimes/8.5/supervisord.conf
 
-   git pushしておく
+   Dockerfile書き換え
+
+   ```Dockerfile
+   ARG WWWGROUP=1000
+
+   RUN groupadd --force -g 1000 sail
+   RUN useradd -ms /bin/bash --no-user-group -g 1000 -u 1337 sail
+   ```
+
+   git push
 
    Name: yusuke_shigeta (何でもOK)
 

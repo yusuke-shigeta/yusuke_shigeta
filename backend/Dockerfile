@@ -91,11 +91,15 @@ RUN useradd -ms /bin/bash --no-user-group -g 1000 -u 1337 sail
 
 RUN git config --global --add safe.directory /var/www/html
 
-COPY start-container /usr/local/bin/start-container
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY php.ini /etc/php/8.5/cli/conf.d/99-sail.ini
-RUN chmod +x /usr/local/bin/start-container
+# COPY start-container /usr/local/bin/start-container
+# COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+# COPY php.ini /etc/php/8.5/cli/conf.d/99-sail.ini
+# RUN chmod +x /usr/local/bin/start-container
 
-EXPOSE 80/tcp
+# EXPOSE 80/tcp
 
-ENTRYPOINT ["start-container"]
+# ENTRYPOINT ["start-container"]
+
+WORKDIR /var/www/html
+RUN chmod -R 777 storage bootstrap/cache
+CMD php artisan serve --host=0.0.0.0 --port=$PORT
