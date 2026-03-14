@@ -277,7 +277,25 @@
    画面の下の方にある 「Environment Variables」 に、先ほど Supabase に繋いだ時の設定を全て入力します。これがないと、本番のLaravelがDBを見つけられません。
    .envファイルを参照。する
 
-5. Next.jsをVercelにデプロイする
+5. Vercel と Render を繋ぐ
+
+   Vercel（フロントエンド）が、新しくできた Render（バックエンド）の URL を認識できるように設定します。
+
+   Render の URL をコピー
+   Render の管理画面のトップに表示されている https://xxx.onrender.com をコピーしてください。
+
+   https://yusuke-shigeta.onrender.com
+
+   Vercel の管理画面へ
+   自分のプロジェクトの Settings > Environment Variables を開きます。
+
+   変数を更新
+   NEXT_PUBLIC_API_URL（または以前設定したバックエンド用の変数）の値を、コピーした Render の URL に書き換えて保存してください。
+
+   再デプロイ
+   Vercel の Deployments タブから、最新のビルドを「Redeploy」するか、何か適当にコードを微修正してプッシュしてください。
+
+6. Next.jsをVercelにデプロイする
 
    いよいよ「表側」を公開します。ここからはブラウザ操作がメインです。
 
