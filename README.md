@@ -279,24 +279,6 @@
 
 5. Vercel と Render を繋ぐ
 
-   Vercel（フロントエンド）が、新しくできた Render（バックエンド）の URL を認識できるように設定します。
-
-   Render の URL をコピー
-   Render の管理画面のトップに表示されている https://xxx.onrender.com をコピーしてください。
-
-   https://yusuke-shigeta.onrender.com
-
-   Vercel の管理画面へ
-   自分のプロジェクトの Settings > Environment Variables を開きます。
-
-   変数を更新
-   NEXT_PUBLIC_API_URL（または以前設定したバックエンド用の変数）の値を、コピーした Render の URL に書き換えて保存してください。
-
-   再デプロイ
-   Vercel の Deployments タブから、最新のビルドを「Redeploy」するか、何か適当にコードを微修正してプッシュしてください。
-
-6. Next.jsをVercelにデプロイする
-
    いよいよ「表側」を公開します。ここからはブラウザ操作がメインです。
 
    [Vercel](https://vercel.com/) にアクセスし、GitHubアカウントでログイン。
@@ -311,7 +293,29 @@
 
    これで数分待つと、https://yusuke-cms.vercel.app のような あなた専用のURL が発行されます。世界中の誰でも見れるようになります。
 
+   Vercel（フロントエンド）が、新しくできた Render（バックエンド）の URL を認識できるように設定します。
+
+   Render の URL をコピー
+   Render の管理画面のトップに表示されている https://xxx.onrender.com をコピーしてください。
+
+   https://yusuke-shigeta.onrender.com
+
+   Vercel の管理画面へ
+   自分のプロジェクトの Settings > Environment Variables を開きます。
+
+   変数を更新
+   NEXT_PUBLIC_API_URL（または以前設定したバックエンド用の変数）の値を、コピーした Render の URL に書き換えて保存してください。
+
+   frontend/app/page.tsxで環境変数を見に行くようにする
+
+   再デプロイ
+   Vercel の Deployments タブから、最新のビルドを「Redeploy」するか、何か適当にコードを微修正してプッシュしてください。
+
 ## コマンド
 
 - コンテナに入る
   - `docker exec -it backend-laravel.test-1 bash`
+
+次回
+
+りリースの構成をまとめる
